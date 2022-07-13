@@ -4,6 +4,8 @@ import (
 	"errors"
 )
 
+const indexOutOfRange = "index out of range"
+
 // box contains list of shapes and able to perform operations on them
 type box struct {
 	shapes         []Shape
@@ -31,7 +33,7 @@ func (b *box) AddShape(shape Shape) error {
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) GetByIndex(i int) (Shape, error) {
 	if i >= b.shapesCapacity {
-		return nil, errors.New("index out of range")
+		return nil, errors.New(indexOutOfRange)
 	}
 	return b.shapes[i], nil
 }
@@ -41,7 +43,7 @@ func (b *box) GetByIndex(i int) (Shape, error) {
 func (b *box) ExtractByIndex(i int) (Shape, error) {
 	var result Shape
 	if i >= b.shapesCapacity {
-		return nil, errors.New("index out of range")
+		return nil, errors.New(indexOutOfRange)
 	}
 	result = b.shapes[i]
 	b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
@@ -53,7 +55,7 @@ func (b *box) ExtractByIndex(i int) (Shape, error) {
 func (b *box) ReplaceByIndex(i int, shape Shape) (Shape, error) {
 	var result Shape
 	if i >= b.shapesCapacity {
-		return nil, errors.New("index out of range")
+		return nil, errors.New(indexOutOfRange)
 	}
 	result = b.shapes[i]
 	b.shapes[i] = shape
@@ -84,6 +86,7 @@ func (b *box) RemoveAllCircles() error {
 	isCircle := false
 	for i := 0; i < len(b.shapes); i++ {
 		if _, ok := b.shapes[i].(*Circle); ok {
+			isCircle = true
 			b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
 		}
 	}
