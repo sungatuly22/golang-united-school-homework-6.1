@@ -4,7 +4,11 @@ import (
 	"errors"
 )
 
-const indexOutOfRange = "index out of range"
+var (
+	errIndexOutOfRange = errors.New("index out of range")
+	errBoxIsFull       = errors.New("there is no place in the box")
+	errNoCircles       = errors.New("there is no circle")
+)
 
 // box contains list of shapes and able to perform operations on them
 type box struct {
@@ -23,7 +27,7 @@ func NewBox(shapesCapacity int) *box {
 // returns the error in case it goes out of the shapesCapacity range.
 func (b *box) AddShape(shape Shape) error {
 	if len(b.shapes) >= b.shapesCapacity {
-		return errors.New("box is full")
+		return errBoxIsFull
 	}
 	b.shapes = append(b.shapes, shape)
 	return nil
@@ -33,7 +37,7 @@ func (b *box) AddShape(shape Shape) error {
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) GetByIndex(i int) (Shape, error) {
 	if i >= b.shapesCapacity {
-		return nil, errors.New(indexOutOfRange)
+		return nil, errIndexOutOfRange
 	}
 	return b.shapes[i], nil
 }
@@ -43,7 +47,7 @@ func (b *box) GetByIndex(i int) (Shape, error) {
 func (b *box) ExtractByIndex(i int) (Shape, error) {
 	var result Shape
 	if i >= b.shapesCapacity {
-		return nil, errors.New(indexOutOfRange)
+		return nil, errIndexOutOfRange
 	}
 	result = b.shapes[i]
 	b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
@@ -55,7 +59,7 @@ func (b *box) ExtractByIndex(i int) (Shape, error) {
 func (b *box) ReplaceByIndex(i int, shape Shape) (Shape, error) {
 	var result Shape
 	if i >= b.shapesCapacity {
-		return nil, errors.New(indexOutOfRange)
+		return nil, errIndexOutOfRange
 	}
 	result = b.shapes[i]
 	b.shapes[i] = shape
@@ -83,15 +87,19 @@ func (b *box) SumArea() float64 {
 // RemoveAllCircles removes all circles in the list
 // whether circles are not exist in the list, then returns an error
 func (b *box) RemoveAllCircles() error {
-	isCircle := false
+	var (
+		isCircle  bool
+		newShapes []Shape
+	)
 	for i := 0; i < len(b.shapes); i++ {
 		if _, ok := b.shapes[i].(*Circle); ok {
 			isCircle = true
-			b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
+			newShapes = append(newShapes, b.shapes[i])
 		}
 	}
+	b.shapes = newShapes
 	if !isCircle {
-		return errors.New("there is no Circles")
+		return errNoCircles
 	}
 	return nil
 }
