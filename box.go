@@ -93,7 +93,7 @@ func (b *box) RemoveAllCircles() error {
 			newShapes = append(newShapes, b.shapes[i])
 		}
 	}
-	if len(newShapes) != len(b.shapes) {
+	if len(newShapes) == len(b.shapes) {
 		return errNoCircles
 	}
 	b.shapes = newShapes
